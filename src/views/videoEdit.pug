@@ -1,0 +1,14 @@
+extends layouts/main
+
+block contents
+    .videoEdit
+        .videoEdit__video
+            video(src=`/${VIDEO.fileUrl}`)
+        .videoEdit__manu
+            form(action=`/videos${routes.videoEdit(VIDEO.id)}`, method="post")
+                input(type="text" name="title" value=VIDEO.title)
+                input(type="text" name="description" value=VIDEO.description)
+                input(type="text" name="genre" value=VIDEO.genre)
+                input(type="submit" value="CLICK EDIT")
+        .video__deleteBtn
+            a(href=`/videos${routes.videoDelete(VIDEO.id)}`) DELETE VIDEO

@@ -1,0 +1,15 @@
+extends layouts/main
+
+block contents
+    .videoDetail
+        .videoDetail__video
+            video(src=`/${VIDEO.fileUrl}`)
+        .videoDetail__manu
+            span.videoDetail__title
+                h1=VIDEO.title
+            span.videoDetail__description
+                p=VIDEO.description
+            span.videoDetail__views
+                p #{VIDEO.views} VIEWS
+            span.videoDetail__edit
+                a(href=`/videos${routes.videoEdit(VIDEO.id)}`) VIDEO EDIT

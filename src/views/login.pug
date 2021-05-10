@@ -1,0 +1,8 @@
+extends layouts/main
+
+block contents
+    form(action=`/users${routes.login}`, method="post")
+        input(type="text" name="name" placeholder="your name")
+        input(type="email" placeholder="your email" name="email")
+        input(type="password" name="password" placeholder="enter a password")
+        input(type="submit" value="LOGIN")

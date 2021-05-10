@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet" href="../static/css/styles.css")
+        title #{siteName} | #{pageTitle}
+    include ../partials/header.pug    
+    body
+        main
+            h1=pageTitle
+            block contents
+        footer
+            include ../partials/footer.pug
+    script(src="/static/js/main.js")

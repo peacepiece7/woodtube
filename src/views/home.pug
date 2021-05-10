@@ -1,0 +1,13 @@
+extends layouts/main
+include mixins/videoBlock
+
+block contents
+    .videoBlock-coulmn
+        each video in VIDEOS
+            +videoBlock({
+                fileUrl : video.fileUrl,
+                title : video.title,
+                description : video.description,
+                genre : video.genre,
+                id : video._id
+            })

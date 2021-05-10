@@ -1,0 +1,9 @@
+extends layouts/main
+
+block contents
+    form(action=`/users${routes.join}`, method="post")
+        input(type="text" name="name" placeholder="your name")
+        input(type="email" name="email" placeholder="your email")
+        input(type="password" name="password" placeholder="enter a password")
+        input(type="password" name="password2" placeholder="verify a password")
+        input(type="submit" value="JOIN")
