@@ -8,6 +8,7 @@ const JOIN = "/join";
 // user routes
 const USERS = "/users";
 const USER_DETAIL = "/:id/userDetail";
+const USER_EDIT = "/:id/userEdit";
 
 const LOGIN = "/login";
 const LOGOUT = "/logout";
@@ -23,6 +24,7 @@ const routes = {
   home: HOME,
   search: SEARCH,
   users: USERS,
+  userEdit: USER_EDIT,
   join: JOIN,
   login: LOGIN,
   logout: LOGOUT,

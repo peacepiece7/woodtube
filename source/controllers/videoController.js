@@ -17,22 +17,27 @@ export const getVideoDetail = async (req, res) => {
 export const getUpload = (req, res) => {
   res.render("upload.pug", { pageTitle: "UPLOAD" });
 };
-export const postUPload = async (req, res) => {
+export const postUpload = async (req, res) => {
   const {
     body: { title, description, genre },
     file: { path: fileUrl },
   } = req;
   try {
-    await VideoModel.create({
+    const newVideo = await VideoModel.create({
       fileUrl,
       title,
       description,
       genre,
+      creator: req.user._id,
     });
+    req.user.videos.push(newVideo.id);
+    req.user.save();
+    console.log(req);
+    res.redirect(`/videos${routes.videoDetail(newVideo.id)}`);
   } catch (error) {
     console.log(`postUploadController errer by ${error}`);
+    res.redirect(routes.home);
   }
-  res.redirect(routes.home);
 };
 
 // EDIT Video Controller

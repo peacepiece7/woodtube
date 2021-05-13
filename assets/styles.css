@@ -1,8 +1,7 @@
-@import "./variable";
-
 body {
   background-color: aliceblue;
 }
+
 video {
   max-width: 400px;
   max-height: 400px;

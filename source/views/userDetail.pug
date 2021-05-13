@@ -1,3 +1,9 @@
 extends layouts/main
 
 block contents
+    .user-title
+        img(src="#" alt="#")
+    .user-title__name
+        span=user.name
+    .user-edit
+        a(href=`/users${routes.userEdit}`) Edit User Profile

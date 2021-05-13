@@ -6,14 +6,16 @@
             input(type="text" name="search" placeholder="find videos")
             input(type="submit" value="search")
     .header__manu
-        span.header__uppload
-            a(href=`/videos${routes.upload}`) UPLOAD
-        span.header__profile
-            a(href=`/users${routes.userDetail}`) PROFILE
-        span.header__logout
-            a(href=`/users${routes.logout}`) LOG OUT
-        span.header__join
-            a(href=`/users${routes.join}`) JOIN
-        span.header__login
-            a(href=`/users${routes.login}`) LOGI IN
+        if loggedUser
+            span.header__upload
+                a(href=`/videos${routes.upload}`) UPLOAD
+            span.header__profile
+                a(href=`/users${routes.userDetail}`) PROFILE
+            span.header__logout
+                a(href=`/users${routes.logout}`) LOG OUT
+        else
+            span.header__join
+                a(href=`/users${routes.join}`) JOIN
+            span.header__login
+                a(href=`/users${routes.login}`) LOGI IN
 

@@ -1,9 +1,26 @@
 import routes from "../routes";
 import UserModel from "../models/User";
 import passport from "passport";
+import { multerAvaterpath } from "../middleware";
+
+// USER DETAIL
 
 export const userDetail = (req, res) => {
-  res.render("userDetail.pug", { pageTitle: "USER DETAIL" });
+  const user = req.user;
+  res.render("userDetail.pug", { pageTitle: "USER DETAIL", user });
+};
+
+// EDIT USER
+
+export const getUserEdit = (req, res) => {
+  const user = req.user;
+  res.render("userEdit.pug", { pageTitle: "EDIT PROFILE", user });
+};
+
+export const postUserEdit = (req, res) => {
+  console.log(req);
+  console.log(req.file);
+  res.redirect(`/users${routes.userEdit}`);
 };
 
 // JOIN CONTROLLER
@@ -19,7 +36,6 @@ export const postJoin = async (req, res, next) => {
   } else {
     try {
       const user = await UserModel({ name, email });
-      console.log(user);
       await UserModel.register(user, password);
       next();
     } catch (error) {
@@ -41,5 +57,6 @@ export const postLogin = passport.authenticate("local", {
 });
 
 export const logout = (req, res) => {
-  res.render("logout.pug", { pageTitle: "LOGOUT" });
+  req.logout();
+  res.redirect(routes.home);
 };

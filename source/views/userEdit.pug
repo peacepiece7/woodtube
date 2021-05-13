@@ -1,0 +1,10 @@
+extends layouts/main
+
+block contents
+    .change-image
+        form(action=`/users${routes.userEdit}` method="post" enctype="multipart/form-data")
+            label(for="avatarUrl") Edit profile (if you have a profile Image it will be changed)
+                input(type="file" name="image")
+            input(type="text" name="name" value=user.name)
+            input(type="submit" value="Edit Profile")
+

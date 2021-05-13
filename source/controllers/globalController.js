@@ -1,11 +1,12 @@
 import routes from "../routes";
 import VideoModel from "../models/Video";
+import UserModel from "../models/User";
 
 export const home = async (req, res) => {
   try {
     const VIDEOS = await VideoModel.find({});
     // console.log(`현제 업데이트 된 VIDEO 목록 ${VIDEOS}`);
-    console.log(`🍉 current login data is ${req.user}`);
+    console.log(req.user);
     res.render("home.pug", { pageTitle: "HOME", VIDEOS });
   } catch (error) {
     console.log(`homeController error by ${error}`);
