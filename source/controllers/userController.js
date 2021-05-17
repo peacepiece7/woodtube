@@ -1,12 +1,12 @@
 import routes from "../routes";
 import UserModel from "../models/User";
 import passport from "passport";
-import { multerAvaterpath } from "../middleware";
 
 // USER DETAIL
 
 export const userDetail = (req, res) => {
   const user = req.user;
+  console.log(req.user);
   res.render("userDetail.pug", { pageTitle: "USER DETAIL", user });
 };
 
@@ -17,10 +17,20 @@ export const getUserEdit = (req, res) => {
   res.render("userEdit.pug", { pageTitle: "EDIT PROFILE", user });
 };
 
-export const postUserEdit = (req, res) => {
-  console.log(req);
-  console.log(req.file);
-  res.redirect(`/users${routes.userEdit}`);
+export const postUserEdit = async (req, res) => {
+  const {
+    body: { name },
+    file,
+  } = req;
+  try {
+    await UserModel.findByIdAndUpdate(req.user._id, {
+      avatarUrl: file ? file.path : req.user.avatarUrl,
+      name: name ? name : req.user.name,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  res.redirect(routes.home);
 };
 
 // JOIN CONTROLLER

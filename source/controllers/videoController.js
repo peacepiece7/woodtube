@@ -1,19 +1,26 @@
 import VideoModel from "../models/Video";
+import UserModel from "../models/User";
 import routes from "../routes";
 
-// Video DETAIL Controller
+// VIDEO DETAIL CONTROLLER
 export const getVideoDetail = async (req, res) => {
   const {
     params: { id },
   } = req;
   try {
-    const VIDEO = await VideoModel.findById(id);
-    res.render("videoDetail.pug", { pageTitle: "VIDEO DETAIL", VIDEO });
+    const videoInfo = await VideoModel.findById(id);
+    const userInfo = await UserModel.findById(videoInfo.creator);
+    res.render("videoDetail.pug", {
+      pageTitle: "VIDEO DETAIL",
+      videoInfo,
+      userInfo,
+    });
   } catch (error) {
     console.log(error);
   }
 };
-// UPLOAD contorller
+
+// VIDEO UPLOAD CONTROLLER
 export const getUpload = (req, res) => {
   res.render("upload.pug", { pageTitle: "UPLOAD" });
 };
@@ -32,7 +39,6 @@ export const postUpload = async (req, res) => {
     });
     req.user.videos.push(newVideo.id);
     req.user.save();
-    console.log(req);
     res.redirect(`/videos${routes.videoDetail(newVideo.id)}`);
   } catch (error) {
     console.log(`postUploadController errer by ${error}`);
@@ -40,8 +46,7 @@ export const postUpload = async (req, res) => {
   }
 };
 
-// EDIT Video Controller
-
+// VIDEO EDIT CONTROLLER
 export const getEditVideo = async (req, res) => {
   const {
     params: { id },
@@ -76,8 +81,7 @@ export const postEditVideo = async (req, res) => {
   }
 };
 
-// EDLETE Video Controller
-
+// EDLETE VIDEO CONTROLLER
 export const videoDelete = async (req, res) => {
   const {
     params: { id },

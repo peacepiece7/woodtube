@@ -3,13 +3,25 @@ extends layouts/main
 block contents
     .videoDetail
         .videoDetail__video
-            video(src=`/${VIDEO.fileUrl}`)
+            video(src=`/${videoInfo.fileUrl}` controls="true")
+        div
+            button#play Play
+            button#mute Mute
+            div
+                span#currenTime 00:00
+                span  / 
+                span#totalTime 00:00
+            input(type="range" step="0.1" min="0" max="1" value="0.5")#volume
         .videoDetail__manu
             span.videoDetail__title
-                h1=VIDEO.title
+                h1=videoInfo.title
             span.videoDetail__description
-                p=VIDEO.description
+                p=videoInfo.description
             span.videoDetail__views
-                p #{VIDEO.views} VIEWS
+                p #{videoInfo.views} VIEWS
             span.videoDetail__edit
-                a(href=`/videos${routes.videoEdit(VIDEO.id)}`) VIDEO EDIT
+                a(href=`/videos${routes.videoEdit(videoInfo.id)}`) VIDEO EDIT
+            span.videoDetail__creator
+                a(href="#") #{userInfo.name}
+block scripts
+    script(src="/assets/js/videoPlayer.js")
