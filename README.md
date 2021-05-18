@@ -2228,7 +2228,7 @@ mode 추가하기 mond 빼면 터밀에 옵션 나옴
 ```js
 // app.js
 
-app.use("/static", express.static("assets"));
+app.use("/static", express.static("static"));
 ```
 
 /static/assets/js/main.js 이런 경로를 통해서 데이터를 주고 받을 수 있음  
