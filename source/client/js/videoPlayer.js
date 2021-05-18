@@ -4,6 +4,7 @@ const muteBtn = document.getElementById("mute");
 const volumeRange = document.getElementById("volume");
 const currenTime = document.getElementById("currenTime");
 const totalTime = document.getElementById("totalTime");
+const timeLine = document.getElementById("timeline");
 
 let volumeValue = 0.5;
 video.volume = volumeValue;
@@ -19,11 +20,13 @@ const hadlePlayClick = () => {
 };
 
 // Mute botton
-const handleMuteClick = (e) => {
+const handleMuteClick = () => {
   if (video.muted) {
     video.muted = false;
+    muteBtn.innerText = "Mute";
   } else {
     video.muted = true;
+    muteBtn.innerText = "Unmute";
   }
   volumeRange.value = video.muted ? 0 : volumeValue;
 };
@@ -42,7 +45,29 @@ const handleVolumeChange = (event) => {
   video.volume = value;
 };
 
-// Video Time
+// Cunrrent Time & Total Time
+const formatTime = (seconds) =>
+  new Date(seconds * 1000).toISOString().substr(11, 8);
+
+const handleLoadedMetadata = () => {
+  totalTime.innerText = formatTime(Math.floor(video.duration));
+  timeLine.max = Math.floor(video.duration);
+};
+
+const handleTimeUpdate = () => {
+  currenTime.innerText = formatTime(Math.floor(video.currentTime));
+  timeLine.value = Math.floor(video.currentTime);
+};
+
+// Time Line
+const handleTimeLineChange = (event) => {
+  const {
+    target: { value },
+  } = event;
+  video.currentTime = value;
+};
+
+/*
 const handleLoadedMetadata = () => {
   let Time = Math.floor(video.duration);
   if (Time < 10) {
@@ -54,6 +79,7 @@ const handleLoadedMetadata = () => {
   }
 };
 
+
 const handleTimeUpdate = () => {
   let Time = Math.floor(video.currentTime);
   if (Time < 10) {
@@ -64,9 +90,11 @@ const handleTimeUpdate = () => {
     currenTime.innerText = Time;
   }
 };
+*/
 
 playBtn.addEventListener("click", hadlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
 video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
+timeLine.addEventListener("input", handleTimeLineChange);
