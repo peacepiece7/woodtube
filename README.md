@@ -3290,3 +3290,18 @@ if video.creator.id === loggedUser.id
     |Uploaded by
     a(href=routes.userDetail(video.creator.id))=video.creator.name
 ```
+
+# Video Time Forammting
+
+컴퓨터는 1970 01 01 09:00 부터 시간을 시작함
+그래서 아래와 같은 값을 가질 수 있음, 단위는 ms임
+
+`new Date(0)`
+=> 1970 jan 01 09:00:00 GMT
+
+`new Date(29*1000)`
+=> 1970 jan 01 09:00:29  GMT
+
+to ISO String으로 한국시간을 기준으로 바꿈
+`new Date(29*1000).toISOStrgin()` 
+=> 1970 01 01 00:00:29
