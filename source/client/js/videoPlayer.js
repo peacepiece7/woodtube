@@ -7,6 +7,7 @@ const totalTime = document.getElementById("totalTime");
 const timeLine = document.getElementById("timeline");
 
 console.log("test git commit line");
+console.log("test git commit line");
 
 let volumeValue = 0.5;
 video.volume = volumeValue;
