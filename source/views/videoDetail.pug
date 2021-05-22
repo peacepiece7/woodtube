@@ -2,18 +2,21 @@ extends layouts/main
 
 block contents
     .videoDetail
-        .videoDetail__video
+        p=videoInfo._id
+        div#videoContainer(data-videoid=videoInfo._id)
             video(src=`/${videoInfo.fileUrl}`)
-        div
-            button#play Play
-            button#mute Mute
-            input(type="range" step="0.1" min="0" max="1" value="0.5")#volume
-            div
-                span#currenTime 00:00:00
-                span  / 
-                span#totalTime 00:00:00
-            div
-                input(type="range" step="1" min="0" value="0")#timeline
+            div#videoControls
+                button#play Play
+                button#mute Mute
+                input(type="range" step="0.1" min="0" max="1" value="0.5")#volume
+                div
+                    span#currenTime 00:00:00
+                    span  / 
+                    span#totalTime 00:00:00
+                div
+                    input(type="range" step="1" min="0" value="0")#timeline
+                div
+                    button#fullScreen Enter Full Screen
         .videoDetail__manu
             span.videoDetail__title
                 h1=videoInfo.title

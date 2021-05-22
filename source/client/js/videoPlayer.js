@@ -5,10 +5,11 @@ const volumeRange = document.getElementById("volume");
 const currenTime = document.getElementById("currenTime");
 const totalTime = document.getElementById("totalTime");
 const timeLine = document.getElementById("timeline");
+const fullScreenBtn = document.getElementById("fullScreen");
+const videoContainer = document.getElementById("videoContainer");
+const videoControls = document.getElementById("videoControls");
 
-console.log("test git commit line");
-console.log("test git commit line");
-
+let controlsTimeOut = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
@@ -95,9 +96,55 @@ const handleTimeUpdate = () => {
 };
 */
 
+// Full Screen
+const handleFullScreen = () => {
+  const fullScreen = document.fullscreenElement;
+  if (fullScreen) {
+    document.exitFullscreen();
+    fullScreenBtn.innerText = "Enter Full Screen";
+  } else {
+    videoContainer.requestFullscreen();
+    fullScreenBtn.innerText = "Exit Full Screen";
+  }
+};
+
+// controls events  (화면에 마우스를 넣었다 뺏을 때 일어나는 이벤트)
+const hideControls = () => {
+  if (controlsTimeOut) {
+    setTimeout(() => {
+      videoControls.classList.remove("showing");
+    }, 1000);
+  }
+};
+
+const handleMouseMove = () => {
+  if (controlsTimeOut) {
+    clearTimeout(controlsTimeOut);
+  }
+  videoControls.classList.add("showing");
+  controlsTimeOut = setTimeout(() => {
+    hideControls();
+  }, 1000);
+};
+
+const handleMouseLeave = () => {
+  controlsTimeOut = setTimeout(() => {
+    hideControls();
+  }, 1000);
+};
+
+const handleEnded = () => {
+  const id = videoContainer.dataset.videoid;
+  fetch(`/api/video/${id}/view`, { method: "POST" });
+};
+
 playBtn.addEventListener("click", hadlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
 video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
+video.addEventListener("ended", handleEnded);
 timeLine.addEventListener("input", handleTimeLineChange);
+fullScreenBtn.addEventListener("click", handleFullScreen);
+video.addEventListener("mousemove", handleMouseMove);
+video.addEventListener("mouseleave", handleMouseLeave);

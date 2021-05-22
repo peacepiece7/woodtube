@@ -16,18 +16,19 @@ import routes from "./routes";
 import globalRouter from "./routers/globalRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
+
 import "./db";
 import { localMiddleWare } from "./middleware";
 
 import "./passport";
+import apiRouter from "./routers/apiRouter";
 
 const app = express();
 
 // SETTING
 app.set("views", process.cwd() + "/source/views");
 app.set("view engin", "pug");
-app.use("/uploads", express.static("uploads"));
-app.use("/assets", express.static("assets"));
+// app.use(express.urlencoded({ extended: true }));
 
 // MORGAN
 const looger = morgan("combined");
@@ -73,9 +74,13 @@ app.use(passport.session());
 // MIDDLEWARE
 app.use(localMiddleWare);
 
+app.use("/uploads", express.static("uploads"));
+app.use("/assets", express.static("assets"));
+
 app.use(routes.home, globalRouter);
 app.use(routes.users, userRouter);
 app.use(routes.videos, videoRouter);
+app.use("/api", apiRouter);
 
 function handleListen() {
   console.log(`🍎 connedted localhost ${process.env.PORT} PORT`);

@@ -109,3 +109,17 @@ export const PostdeleteVideoController = async (req, res) => {
   res.redirect(routes.home);
 };
 */
+
+export const registerView = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+  const video = await VideoModel.findById(id);
+  if (video) {
+    video.views = video.views + 1;
+    await video.save();
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+};

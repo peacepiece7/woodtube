@@ -1,4 +1,3 @@
-import alert from "alert";
 // global routes
 
 const HOME = "/";
