@@ -1,9 +1,16 @@
 extends layouts/main
 
 block contents
+    div
+        button#startBtn(type="submit") start recoding
+    div
+        video#preview
     form(action=`/videos${routes.upload}` method="post" enctype="multipart/form-data")
         input(type="file" name="file" placeholder="video" accept="video/*")
         input(type="text" name="title" placeholder="video title")
         input(type="text" name="description" placeholder="video description")
         input(type="text" name="genre" placeholder="video genre")
         input(type="submit" value="submit")
+
+block scripts
+    script(src="/assets/js/recoder.js")
