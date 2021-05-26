@@ -17,6 +17,7 @@ export const onlyPrivate = (req, res, next) => {
   if (req.user) {
     next();
   } else {
+    req.flash("error", "Not authorized");
     res.status(400);
     res.redirect(routes.home);
   }
@@ -24,6 +25,7 @@ export const onlyPrivate = (req, res, next) => {
 
 export const onlyPublic = (req, res, next) => {
   if (req.user) {
+    req.flash("error", "Not authorized");
     res.status(400);
     res.redirect(routes.home);
   } else {

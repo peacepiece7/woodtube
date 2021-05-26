@@ -42,6 +42,7 @@ export const postJoin = async (req, res, next) => {
   const { name, email, password, password2 } = req.body;
   if (password !== password2) {
     res.status(400);
+    req.flash("info", "password is not collect");
     res.render("join", { pageTitle: "Join" });
   } else {
     try {
@@ -49,6 +50,7 @@ export const postJoin = async (req, res, next) => {
       await UserModel.register(user, password);
       next();
     } catch (error) {
+      req.flash("duplication", "ID or Email is duplacated");
       console.log(error);
       res.redirect(routes.home);
     }

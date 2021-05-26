@@ -1,3 +1,5 @@
+include ../mixins/message.pug
+
 <!DOCTYPE html>
 html(lang="en")
     head
@@ -7,6 +9,12 @@ html(lang="en")
         title #{siteName} | #{pageTitle}
     include ../partials/header.pug    
     body
+        if messages.error
+            +message("error", messages.error)
+        if messages.success
+            +message("sucess", messages.sucess)
+        if messages.info
+            +message("info", messages.info)
         main
             h1=pageTitle
             block contents
