@@ -1,8 +1,8 @@
 extends layouts/main
 
 block contents
-    .videoDetail
-        p=videoInfo._id
+    div.videoDetail
+        // p=videoInfo._id
         div#videoContainer(data-videoid=videoInfo._id)
             video(src=`/${videoInfo.fileUrl}`)
             div#videoControls
@@ -17,7 +17,7 @@ block contents
                     input(type="range" step="1" min="0" value="0")#timeline
                 div
                     button#fullScreen Enter Full Screen
-        .videoDetail__manu
+        div.videoDetail__manu
             span.videoDetail__title
                 h1=videoInfo.title
             span.videoDetail__description
@@ -28,5 +28,13 @@ block contents
                 a(href=`/videos${routes.videoEdit(videoInfo.id)}`) VIDEO EDIT
             span.videoDetail__creator
                 a(href="#") #{userInfo.name}
+        if loggedUser
+            div.video__comments
+                form.video__comments-form#commentForm
+                    textarea(cols="30" rows="10" placeholder="Write a nice comment...")
+                    button Add Comment
+
 block scripts
     script(src="/assets/js/videoPlayer.js")
+    if loggedUser
+        script(src="/assets/js/commentSection.js")

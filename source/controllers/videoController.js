@@ -123,3 +123,10 @@ export const registerView = async (req, res) => {
     res.sendStatus(404);
   }
 };
+
+export const createComment = (req, res) => {
+  console.log(req.params);
+  let parsingRequest = JSON.parse(req.body);
+  console.log(parsingRequest.text);
+  res.end();
+};
