@@ -52,7 +52,7 @@ app.use(
 
 // BODY PARSER
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.text({ extended: false }));
+app.use(bodyParser.text());
 // COOKIE PARSER
 app.use(cookieParser(process.env.COOKIE_SECRET));
 // SESSION

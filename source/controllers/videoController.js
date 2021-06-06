@@ -1,5 +1,6 @@
 import VideoModel from "../models/Video";
 import UserModel from "../models/User";
+import CommentModel from "../models/Comment";
 import routes from "../routes";
 
 // VIDEO DETAIL CONTROLLER
@@ -7,13 +8,23 @@ export const getVideoDetail = async (req, res) => {
   const {
     params: { id },
   } = req;
+  let currentUser = "";
+  if (!req.user) {
+    currentUser = "no login";
+  } else {
+    currentUser = req.user._id;
+  }
   try {
-    const videoInfo = await VideoModel.findById(id);
-    const userInfo = await UserModel.findById(videoInfo.creator);
+    const videoInfo = await VideoModel.findById(id).populate("comments");
+    console.log("videoInfo", videoInfo);
+    // prettier-ignore
+    const userInfo = await UserModel.findById(videoInfo.creator)
+    console.log("userInfo", userInfo);
     res.render("videoDetail.pug", {
       pageTitle: "VIDEO DETAIL",
       videoInfo,
       userInfo,
+      currentUser,
     });
   } catch (error) {
     console.log(error);
@@ -109,24 +120,3 @@ export const PostdeleteVideoController = async (req, res) => {
   res.redirect(routes.home);
 };
 */
-
-export const registerView = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  const video = await VideoModel.findById(id);
-  if (video) {
-    video.views = video.views + 1;
-    await video.save();
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(404);
-  }
-};
-
-export const createComment = (req, res) => {
-  console.log(req.params);
-  let parsingRequest = JSON.parse(req.body);
-  console.log(parsingRequest.text);
-  res.end();
-};

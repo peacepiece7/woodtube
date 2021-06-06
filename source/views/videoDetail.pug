@@ -1,7 +1,7 @@
 extends layouts/main
 
 block contents
-    div.videoDetail
+    div.video-detail
         // p=videoInfo._id
         div#videoContainer(data-videoid=videoInfo._id)
             video(src=`/${videoInfo.fileUrl}`)
@@ -17,23 +17,28 @@ block contents
                     input(type="range" step="1" min="0" value="0")#timeline
                 div
                     button#fullScreen Enter Full Screen
-        div.videoDetail__manu
-            span.videoDetail__title
+        div.video-detail__manu
+            span.video-detail__title
                 h1=videoInfo.title
-            span.videoDetail__description
+            span.video-detail__description
                 p=videoInfo.description
-            span.videoDetail__views
+            span.video-detail__views
                 p #{videoInfo.views} VIEWS
-            span.videoDetail__edit
+            span.video-detail__edit
                 a(href=`/videos${routes.videoEdit(videoInfo.id)}`) VIDEO EDIT
-            span.videoDetail__creator
+            span.video-detail__creator
                 a(href="#") #{userInfo.name}
         if loggedUser
-            div.video__comments
-                form.video__comments-form#commentForm
+            div.video-add-comments
+                form.video-comments-form
                     textarea(cols="30" rows="10" placeholder="Write a nice comment...")
-                    button Add Comment
-
+                    button#video-comment__create-btn Add Comment
+        div.video-comments
+            ul.video-comments__list
+                each comment in videoInfo.comments.reverse()
+                    li=comment.text
+                    if `${currentUser}` == comment.creator
+                        button#video-comment__delete-btn(data-commentid=comment.id) ❌
 block scripts
     script(src="/assets/js/videoPlayer.js")
     if loggedUser
