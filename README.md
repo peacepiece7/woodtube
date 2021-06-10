@@ -74,7 +74,7 @@ mode는 webpack을 어떤 용도로 사용할 지를 뜻함
 
 
 아래와 같이 스크립트를 합칠 수 있다.
-` "build" : "npm run build:server && build:assets", `
+` "build" : "npm run build:server && npm run build:assets", `
 
 그리고 package.json script의 최종 형태
 
@@ -83,7 +83,7 @@ package.json
 
   "scripts": {
     "start" : "node build/init.js",
-    "build" : "npm run build:server && build:assets", 
+    "build" : "npm run build:server && npm run build:assets", 
     "build:server": "babel source --out-dir build",
     "build:server-test": "./node_modules/.bin/babel source --out-dir lib",
     "build:assets" : "webpack --mode=production",
