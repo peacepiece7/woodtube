@@ -117,11 +117,8 @@ dist
 .pnp.*
 
 .env
-node_modules
-node_modules/
-.npm
-package.json
-package-lock.json
-.babelrc
-uploads
-uploads/
+/node_modules
+/uploads
+/build
+/assets
+.DS_Store
