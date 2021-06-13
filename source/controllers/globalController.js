@@ -8,7 +8,7 @@ export const home = async (req, res) => {
     // console.log(`현제 업데이트 된 VIDEO 목록 ${VIDEOS}`);
     res.render("home.pug", { pageTitle: "HOME", VIDEOS });
   } catch (error) {
-    console.log(`homeController error by ${error}`);
+    req.flash("error", "404 NOT FOUNDED");
     res.status(404);
   }
 };
@@ -22,7 +22,7 @@ export const search = async (req, res) => {
     });
     res.render("search.pug", { pageTitle: `SEARCH BY: ${obj.search}`, VIDEOS });
   } catch (error) {
-    console.log(`searchController error : ${error}`);
+    req.flash("error", "Sorry can`t find");
     res.redirect(routes.home);
   }
 };

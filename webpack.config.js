@@ -8,8 +8,6 @@ module.exports = {
     recoder: "./source/client/js/recoder.js",
     commentSection: "./source/client/js/commentSection.js",
   },
-  mode: "development",
-  watch: true,
   plugins: [
     new MiniCssExtractPlugin({
       filename: "styles.css",

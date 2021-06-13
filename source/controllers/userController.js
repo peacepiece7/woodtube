@@ -1,12 +1,11 @@
 import routes from "../routes";
-import UserModel from "../models/User";
+import UserModel from "../routers/models/User";
 import passport from "passport";
 
 // USER DETAIL
 
 export const userDetail = (req, res) => {
   const user = req.user;
-  console.log(req.user);
   res.render("userDetail.pug", { pageTitle: "USER DETAIL", user });
 };
 
@@ -41,18 +40,17 @@ export const getJoin = (req, res) => {
 export const postJoin = async (req, res, next) => {
   const { name, email, password, password2 } = req.body;
   if (password !== password2) {
-    res.status(400);
-    req.flash("info", "password is not collect");
-    res.render("join", { pageTitle: "Join" });
+    req.flash("error", "password is not collect");
+    res.redirect("/users/join");
   } else {
     try {
       const user = await UserModel({ name, email });
       await UserModel.register(user, password);
-      next();
+      req.flash("error", "now, you can login");
+      res.redirect("/");
     } catch (error) {
-      req.flash("duplication", "ID or Email is duplacated");
-      console.log(error);
-      res.redirect(routes.home);
+      req.flash("error", "ID or Email is duplacated");
+      res.redirect("/users/join");
     }
   }
 };
