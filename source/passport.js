@@ -1,5 +1,5 @@
 import passport from "passport";
-import UserModel from "./routers/models/User";
+import UserModel from "./models/User";
 
 passport.use(UserModel.createStrategy());
 

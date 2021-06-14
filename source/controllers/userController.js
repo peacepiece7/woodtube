@@ -1,5 +1,5 @@
 import routes from "../routes";
-import UserModel from "../routers/models/User";
+import UserModel from "../models/User";
 import passport from "passport";
 
 // USER DETAIL
