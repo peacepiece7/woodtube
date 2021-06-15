@@ -2,7 +2,7 @@ extends layouts/main
 
 block contents
     .user-title
-        img(src=`/${user.avatarUrl}`, alt="you did not select avatar")
+        img(src=user.avatarUrl, alt="you did not select avatar")
     .user-title__name
         span=user.name
     .user-edit

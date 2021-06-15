@@ -4,7 +4,7 @@ block contents
     div.video-detail
         // p=videoInfo._id
         div#videoContainer(data-videoid=videoInfo._id)
-            video(src=`/${videoInfo.fileUrl}`)
+            video(src=videoInfo.fileUrl)
             div#videoControls
                 button#play Play
                 button#mute Mute

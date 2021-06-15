@@ -16,10 +16,9 @@ export const getVideoDetail = async (req, res) => {
   }
   try {
     const videoInfo = await VideoModel.findById(id).populate("comments");
-    console.log("videoInfo", videoInfo);
     // prettier-ignore
     const userInfo = await UserModel.findById(videoInfo.creator)
-    console.log("userInfo", userInfo);
+    console.log(videoInfo);
     res.render("videoDetail.pug", {
       pageTitle: "VIDEO DETAIL",
       videoInfo,
@@ -38,11 +37,11 @@ export const getUpload = (req, res) => {
 export const postUpload = async (req, res) => {
   const {
     body: { title, description, genre },
-    file: { path: fileUrl },
+    file: { fileUrl },
   } = req;
   try {
     const newVideo = await VideoModel.create({
-      fileUrl,
+      fileUrl: req.file ? req.file.location : fileUrl,
       title,
       description,
       genre,
@@ -50,6 +49,7 @@ export const postUpload = async (req, res) => {
     });
     req.user.videos.push(newVideo.id);
     req.user.save();
+    console.log(newVideo);
     res.redirect(`/videos${routes.videoDetail(newVideo.id)}`);
   } catch (error) {
     console.log(`postUploadController errer by ${error}`);

@@ -1,6 +1,20 @@
 import routes from "./routes";
 import multer from "multer";
+import multerS3 from "multer-s3";
+import aws from "aws-sdk";
 import path from "path";
+
+const s3 = new aws.S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ID,
+    secretAccessKey: process.env.AWS_SECRET,
+  },
+});
+
+const multerUploader = multerS3({
+  s3: s3,
+  bucket: "wetubeeee",
+});
 
 export const localMiddleWare = (req, res, next) => {
   res.locals.siteName = "🪚 Wood Tube";
@@ -32,7 +46,7 @@ export const onlyPublic = (req, res, next) => {
     next();
   }
 };
-
+/*
 const multerVideoPath = multer({ dest: "uploads/videos/" });
 
 const multerAvaterPath = multer({
@@ -48,6 +62,22 @@ const multerAvaterPath = multer({
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 바이러스때문에 크기를 설정해주는 것이 좋다.
+});
+*/
+const multerAvaterPath = multer({
+  dest: "uploads/avatars/",
+  limits: {
+    fileSize: 10000000,
+  },
+  storage: multerUploader,
+});
+
+const multerVideoPath = multer({
+  dest: "uploads/videos/",
+  limits: {
+    fileSize: 10000000,
+  },
+  storage: multerUploader,
 });
 
 export const uploadAvatarPath = multerAvaterPath.single("image");

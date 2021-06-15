@@ -40,16 +40,26 @@ app.use((req, res, next) => {
   next();
 });
 */
+/*
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
     directives: {
       "script-src": ["'self'", "'unsafe-eval'"],
       "object-src": "'self'",
+      "media-src": [
+        "'self'",
+        "https://wetubeeee.s3.ap-northeast-2.amazonaws.com",
+      ],
     },
   })
 );
-
+*/
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 // BODY PARSER
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());

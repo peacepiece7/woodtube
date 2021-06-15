@@ -23,7 +23,7 @@ export const postUserEdit = async (req, res) => {
   } = req;
   try {
     await UserModel.findByIdAndUpdate(req.user._id, {
-      avatarUrl: file ? file.path : req.user.avatarUrl,
+      avatarUrl: file ? file.location : req.user.avatarUrl,
       name: name ? name : req.user.name,
     });
   } catch (error) {
