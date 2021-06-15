@@ -92,5 +92,104 @@ package.json
   },
 ```
 
+<br>
+<br>
 
+# 17.4 ~5 envinorment variables
+
+heroku는 git 을 바라보고 있기 때문에 .gitginore를 읽울 수 없음
+
+`process.env.MONGODB_URL`이나`porcess.env.PORT`같은 환경 변수는 heroku->setting->config varialble에 입력해 줌으로
+
+오류를 고칠 수 있음
+
+용어가 기억이 안 나는데 social login을 구현할 때 받아오는 SECRET KEY, ID 같은 환경 변수도 heroku에 입력해주장
+
+그리고 github api에서 authentification callback URL을 해당 사이트 주소로 변경
+```
+예를들어
+localhost:4000/wetube/api/github/auth/callback
+위의 코드를 아래와 같이 변경
+https://wetube.heroku.com/api/github/auth/callback
+```
+# 17.5 github으로 배포하기
+
+github connet하면 됨 ㅎ.. 
+
+git push origin master
+
+-끝-
+
+# 17.6 ~ aws s3 사용하기
+
+aws 계정 생성, storage -> s3 들어가서 create buket
+
+api key를 생성 해서 nodejs와 통신하기 위해 aws의 IAM을 아래와 같이 이용
+
+IAM에 들어가서 USER 게정을 생성함, programtic access key를 활성하 해주면,
+
+aws access key를 발급 받을 수 있는데 이걸 안 하면 매번 aws에 들어가서 로그인을 직접 해야 
+
+(나중에 해보장)
+
+그리고 user에 어디까지 접근 권한을 허용할지  + 그룹에 사용자 추가 기능이 있는데
+
+계정을 하나만 쓸 꺼니까 add user in group 말고 attach exsisting policy deirectly로 
+
+기존 정책 직접 연걸 클릭 -> Amazons3FullAccess을 허용으로하자, 
+
+만약 administrator를 주면 사용자들이 내 계정으로 뭔 짓을 할 지 모르기 때문에 이렇게 필요한 권한만 부여해야 함,
+
+AWS_ID, AWS_SECRET을 받고, 이걸 heroku Reveal conig vars에 입력해줌
+
+npm install --save multer-s3
+npm install aws-sdk
+
+아래와 같이 수정
+
+```js
+// middleware.js
+
+import multer from "multer";
+import multerS3 from "multer-s3";
+import aws from "aws-sdk";
+
+const s3 = new aws.S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ID,
+    secretAccessKey: process.env.AWS_SECRET,
+  },
+});
+
+const multerUploader = multerS3({
+  s3: s3,
+  bucket: "wetubeeee",
+});
+
+const multerAvaterPath = multer({
+  dest: "uploads/avatars/",
+  limits: {
+    fileSize: 10000000,
+  },
+  storage: multerUploader,
+});
+
+const multerVideoPath = multer({
+  dest: "uploads/videos/",
+  limits: {
+    fileSize: 10000000,
+  },
+  storage: multerUploader,
+});
+
+export const uploadAvatarPath = multerAvaterPath.single("image");
+
+export const uploadVideoPath = multerVideoPath.single("file");
+```
+
+# 17-8 object가 aws에 올라가지 않는 에러 수정?
+
+localhost에서 upload해면 데이터는 aws에 올라가지만, localhost에서 가져오질 못함,
+
+aws에 가서 권한 수정 해줌
 
