@@ -1,3 +1,54 @@
+# express-session ( # 7.13 ~ 7.14 중 )
+
+인증이 필요한 경우만 cookie를 주는게 효울적임
+
+<br>
+
+#### saveUninitialized : false
+
+세션이 만들어지고 수정된 적이 없을 떄 (초기화 되지 않은)
+
+req.session.loggin = true 라고 지정하면 세션이 만들어지고 수정 된 거임, 이때 쿠키가 생성됨
+
+<br>
+
+#### token authentication
+
+session.user를 db에 저장하는 부담이 있을 경우,
+ios, android 처럼 cookie를 갖고 있지 않은 경우 token authentication을 사용함
+
+#### secret
+
+쿠키에 하는 사인으로 backend에서 브라우저로 보냈다는 걸 보여주기 위함 
+cookie hijack이라는 해킹을 보호하기 위함
+
+#### domain
+
+누가 cookie를 보냈는지를 적음 
+localhost -> localhost:~ 로 가는거임
+youtube cookie는 youtube로 감
+
+#### expire, Max-Age
+
+사용자가 해당 브라우저에서 나가면 cookie는 사라짐, 
+
+
+```js
+app.use(session({
+  secret : "akxcjzid123asdweiredstring"
+  resave : false,
+  saveUninitialized : false,
+  cookie : {
+    maxAge : 20000
+  }
+  
+
+    }
+  )
+)
+```
+
+
 # 백엔드 구축하기 ( # 17.0 ~ ) 
 
 내가 만든 사이트를 다른 사용자들에게 보여주기 위해서는 몇가지 단계를 거쳐야 한다.
