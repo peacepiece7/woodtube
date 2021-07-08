@@ -174,159 +174,190 @@ video 렌더링 할 때도 status를 지정해줘야 잘못된 페이지가 브�
 <br>
 <br>
 <br>
+# Comment Section (#16.1 - #16.9) 
 
+<br>
+<br>
 
+# RECAP
 
-# updated 2021 recoder setup (navigator.mediaDevices), ( 이 기능은 지금 이해하기 어렵고, 추가적인 기능으로 필요할 때 구현해 볼 수 있음 )
+1. comment model을 만든다.
+2. videoDetail.pug에 form textarea, button을 작성한다. ( no method, no value )
+3. videoId를 알기위해 dataset을 지정한다.
+4. router. controller 경로를 만들어준다. 
+5. bodyParser.json(), bodyParser.text(), regenerator-runtime을 상황에 맞게 사용한다.
+6. commetSection.js에 fetch api를 사용하여 textarea.value를 body에 실어서 POST로 /apis/videoId/comment router로 보낸다. 
+7. apiContoller.js에서 request된 textarea.value를 commentModel에 등록한다.
+8. fake comment(reload하지 않아도 comment가 바로 보이도록)와 delete comment를 만들어준다.
 
-upload.pug에 video recorder를 만들자,
-아래와 같이 video, play button을 추가
+<br>
+<br>
 
-```pug
-// upload.pug
+# videoDetail.pug
 
-div
-  button#startBtn(type="submit") start recoding
-div
-  video#preview
-```
+video dataset을 해주고, form을 작성, button ( no submit, no value, no name )
+text만 받아서 fetch로 보낼 거니까 reload되선 안 된다.
 
-webpack에 recorder.js 파일을 entry한다,
-
-```js
-// webpack.config.js
-
-entry : {
-    ...
-    ..
-    recoder: "./source/client/js/recoder.js",
-}
+```pug 
+video.video(src=video.fileUrl controls=true data-videoid=video._id)
 
 ...
 ..
 
+form#video-comments-form
+            input(type="textarea")
+            button#submitCommentBtn Post Submit
 ```
 
-console.log(stream)울 먼저 작성해보고, 아래와 같이 작성한다.
+<br>
+<br>
 
-> navigator.mediaDevices.getUserMedia({}) : 미디어 객체를 생성한다.
-> video.srcObject : video의 객체 소스로 미디어 객체에 연결해준다.
-> video.play() 미디어를 실행한다.
+# Comment Models 
+
+아래와 같이 작성, Video.js, User.js에 각각 comments를 배열로 받는 스키마를 만들어 준다.
 
 ```js
-// recoder.js
+// Comments.js
 
-const startBtn = document.getElementById("startBtn");
-const video = document.getElementById("preview");
+import mongoose from "mongoose";
 
-const handleRcordeBtn = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: { width: 500, height: 500 },
+const commentSchema = new mongoose.Schema({
+  text: { type: String, required: true },
+  createdAt: { type: Date, required: true, default: Date.now },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  video: { type: mongoose.Schema.Types.ObjectId, ref: "Video" },
+});
+
+const CommentModel = mongoose.model("Comment", commentSchema);
+
+export default CommentModel;
+
+```
+
+init.js에 import 해준다.
+
+```js
+// init.js
+
+import "dotenv/config"
+import "./db"
+import "./models/Comment.js"
+import "./models/User.js"
+import "./models/Video.js"
+```
+<br>
+<br>
+
+# comment fetch()
+                          
+                          
+
+textarea에 작성한 받아온 댓글을 fetch("/api/videos/:id/comment")로 POST
+
+fetch로 받은 페이지를 controller router에 작성한다.
+
+
+```js
+// apiRouter.js
+
+apiRouter.post("/videos/:id/comment", createComment);
+
+
+// videoController.js
+ 
+export const createComment = (req, res) => {
+  let parsingRequest = JSON.parse(req.body);
+  res.end();
+};
+
+// server.js
+
+app.use(bodyParser.json());
+```
+
+commnetSection.js 파일을 만들고 webpack과 연결, 아래와 같이 작성해준다.
+
+```js
+const videoContainer = document.getElementById("videoContainer");
+const form = document.getElementById("commentForm");
+const textarea = form.querySelector("textarea");
+const btn = form.querySelector("button");
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+  const video = videoContainer.dataset.videoid;
+  let text = textarea.value;
+  JSON.stringify(text);
+  fetch(`/api/videos/${video}/comment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text }),
   });
-  video.srcObject = stream;
-  video.play();
 };
 
-startBtn.addEventListener("click", handleRcordeBtn);
+btn.addEventListener("submit", handleSubmit);
 ```
 
+이제 위의 코드들을 하나씩 설명해보자
 
-regenerator-runtime에러가 발생하는데 npm install regenerator-runtime을 설치하고
+1. event.preventDefault();
 
-아래와 같이 작성한다.
-```js
-// main.js
+이 코드가 없으면 fetch가 기본적으로 reload를 하기 때문에 콘솔이 지워진다.
+잘 기억해두자.
 
-import "regenerator-runtime"
-```
-```pug
-// main.pug
+2. btn.addEventListener("submit", handleSubmit);
 
-...
-..
+click이 아니라 submit이다.
+button을 클릭했을 때, submit event가 일어나고 dom api는 submit docs를 가져온다. 
+submit docs에 있는 method에 preventDetault가 있기 때문에, "click"이 아니라 "submit"을 해야한다. 
 
-script(src="main,js")
-  block scripts
-  
-```
+2. fetch
 
-이렇게 적어도 된다.
+JSON.stringify({ textarea.value })이렇게 comment에 적은 text를 JSON화 해서 POST method로 보낸다.
+headers에 json임을 명시해줘야한다. 
 
-```js
-// recoder.js
+만약 plain text를 보낸다면, headers : text/html, body-parser.text()를 설정해주면 되겠다. 아래 설명을 참고하자
 
-import regeneratorRuntime from "regenerator-runtime"
 
-...
-..
-```
+3. body-parser
 
-<br>
-<br>
-<br>
+req.body에 데이터를 넣기 위해서는 body-parser를 이용해야한다. 
 
-# recording button ( media recoder )
-
-recoder.js를 아래와 같이 바꿔서 레코딩 시작, 멈춤 핸들링을 만들고 
-
-innerText도 바꿔준다.
+bodyParser는 여러 메서드가 있다 지금 알아야할 것은 아래와 같다.
 
 ```js
-// recoder.js
-const startBtn = document.getElementById("startBtn");
-const video = document.getElementById("preview");
+// url로 이동할 때 전송한 데이터를 body에 넣을려면 urlencoded 메서드를 사용한다.
+app.use(bodyPaser.urlencoded({extedned:false}))
 
-let stream;
+// fetch로 text를 전송할 때 사용한다.
+app.use(bodyParser.text());
 
-const handleStart = () => {
-  startBtn.innerText = "Stop Recording";
-  startBtn.removeEventListener("click", handleStart);
-  startBtn.addEventListener("click", handleStop);
-  const recorder = new MediaRecorder(stream);
-  recorder.ondataavailable = (e) => {
-    console.log("recording done");
-    console.log(e);
-    console.log(e.data);
-  };
-  console.log(recorder);
-  recorder.start();
-  console.log(recorder);
-  setTimeout(() => {
-    recorder.stop();
-  }, 10000);
-};
-
-const handleStop = () => {
-  startBtn.innerText = "Start Recording";
-  startBtn.removeEventListener("click", handleStop);
-  startBtn.addEventListener("click", handleStart);
-};
-const init = async () => {
-  stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: { width: 500, height: 500 },
-  });
-  video.srcObject = stream;
-  video.play();
-};
-
-init();
-
-startBtn.addEventListener("click", handleStart);
-
-
+// fetch로 json을 전송할 떄 사용한다.
+app.use(bodyParser.json());
 ```
 
-```js
-// recoder.js
+4. JSON.stringfy(), JSON.parser()
+
+JSON.stringfy() : object를 json으로 변환한다.
+
+JSON.parse() : json을 object로 변환한다.
+
+5. fetch POST로 보낼 떄 필요한 것
+
+fetch로 객체를 post할 경우 bodyParser.json()과 JSON.stringify()가 필요하다. (JSON으로 만들어서 보내기)
+또는,  
+fetch로 텍스트를 post할 경유 bodyParser.text()를 해주면 된다.
+
+6. fetch POST -> req.body로 받아올 떄 필요한 것
+
+JSON 객체가 body에서 가져오면 js는 이를 텍스트로 인식한다. 그래서 headers : "Content-Type": "application/json", 를 작성해 줌으로 
+보낸 데이터가 json임을 알려준다.
+아니면
+JSON.parse(req.body)를 해서 객체로 변환해 줘도 된다.
 
 
-```
-
-<br>
-<br>
-<br>
 
 # PUG
 
@@ -4316,16 +4347,13 @@ export const registerView = async (req, res) => {
 
 # video view controller, How to set video ID? 
 
+data-[str]=[id]로 아래와 같이 **특정 tag에 id를 부여할 수 있음**
+`<article id="ARTICLE", data-super="superArticle", data-love="lovelyArticle"></article>`
 
-data-[str]=[id]로 아래와 같이 **특정 tag에 id를 부여할 수 있음 **
 
-```html
-<article id="ARTICLE", data-super="superArticle", data-love="lovelyArticle></article>
-```
-```
 데이터를 불러올 땐 
 
-```js
+
 const article = docment.querySelector('#ARTICLE'}
 article.dataset.super // "superArticle"
 article.dataset.love. // "lovelyArticle"
@@ -4466,136 +4494,7 @@ if messages.error
 <br>
 <br>
 
-# Comment Section (#16.1 - #16.9) 
 
-<br>
-<br>
-<br>
-
-# Comment Models 
-
-아래와 같이 작성하고, Video.js, User.js에 각각 comments를 배열로 받는 스키마를 만들어 준다.
-
-```js
-// Comments.js
-
-import mongoose from "mongoose";
-
-const commentSchema = new mongoose.Schema({
-  text: { type: String, required: true },
-  createdAt: { type: Date, required: true, default: Date.now },
-  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  video: { type: mongoose.Schema.Types.ObjectId, ref: "Video" },
-});
-
-const CommentModel = mongoose.model("Comment", commentSchema);
-
-export default CommentModel;
-
-```
-
-init.js에 import 해준다.
-
-```js
-// init.js
-
-import "dotenv/config"
-import "./db"
-import "./models/Comment.js"
-import "./models/User.js"
-import "./models/Video.js"
-```
-<br>
-<br>
-
-# comment fetch()
-
-textarea에 작성한 받아온 댓글을 fetch("/api/videos/:id/comment")로 post 하자 
-
-> fetch로 받은 페이지를 controller router에 작성한다.
-
-```js
-// apiRouter.js
-
-apiRouter.post("/videos/:id/comment", createComment);
-
-
-// videoController.js
- 
-export const createComment = (req, res) => {
-  let parsingRequest = JSON.parse(req.body);
-  res.end();
-};
-
-// server.js
-
-app.use(bodyParser.json());
-```
-commnetSection.js 파일을 만들고 webpack과 연결, 아래와 같이 작성해준다.
-```js
-const videoContainer = document.getElementById("videoContainer");
-const form = document.getElementById("commentForm");
-const textarea = form.querySelector("textarea");
-const btn = form.querySelector("button");
-
-const handleSubmit = (event) => {
-  event.preventDefault();
-  const video = videoContainer.dataset.videoid;
-  let text = textarea.value;
-  JSON.stringify(text);
-  fetch(`/api/videos/${video}/comment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text }),
-  });
-};
-
-btn.addEventListener("click", handleSubmit);
-```
-
-이제 위의 코드들을 하나씩 설명해보자
-
-1. fetch
-
-fetch로 데이터를 주기 위해 post method와 라우터를 만들어 줘야한다.
-
-2. body-parser
-
-req.body에 데이터를 넣기 위해서는 body-parser를 이용해야한다. 
-
-bodyParser는 여러 메서드가 있다 지금 알아야할 것은 아래와 같다.
-
-```js
-// url로 이동할 때 전송한 데이터를 body에 넣을려면 urlencoded 메서드를 사용한다.
-app.use(bodyPaser.urlencoded({extedned:false}))
-
-// fetch로 text를 전송할 때 사용한다.
-app.use(bodyParser.text());
-
-// fetch로 json을 전송할 떄 사용한다.
-app.use(bodyParser.json());
-```
-
-3. JSON.stringfy(), JSON.parser()
-
-JSON.stringfy() : js 값을 JSON으로 변환한다.
-
-JSON.parse() : JSON을 객체로 변환한다.
-
-4. fetch POST로 보낼 떄 필요한 것
-
-fetch로 객체를 post할 경우 bodyParser.json()과 JSON.stringify()가 필요하다. (JSON으로 만들어서 보내기)
-또는,  
-fetch로 텍스트를 post할 경유 bodyParser.text()를 해주면 된다.
-
-5. fetch POST -> req.body로 받아올 떄 필요한 것
-
-JSON 객체가 body에서 가져오면 js는 이를 텍스트로 인식한다. 그래서 headers : "Content-Type": "application/json", 를 작성해 줌으로 
-보낸 데이터가 json임을 알려준다.
-아니면
-JSON.parse(req.body)를 해서 객체로 변환해 줘도 된다.
 
 # 백엔드 구축하기 ( # 17.0 ~ ) 
 
@@ -5039,4 +4938,155 @@ export const uploadVideoPath = multerVideoPath.single("file");
 localhost에서 upload해면 데이터는 aws에 올라가지만, localhost에서 가져오질 못함,
 
 aws에 가서 권한 수정 해줌
+
+  # updated 2021 recoder setup (navigator.mediaDevices), ( 이 기능은 지금 이해하기 어렵고, 추가적인 기능으로 필요할 때 구현해 볼 수 있음 )
+
+upload.pug에 video recorder를 만들자,
+아래와 같이 video, play button을 추가
+
+```pug
+// upload.pug
+
+div
+  button#startBtn(type="submit") start recoding
+div
+  video#preview
+```
+
+webpack에 recorder.js 파일을 entry한다,
+
+```js
+// webpack.config.js
+
+entry : {
+    ...
+    ..
+    recoder: "./source/client/js/recoder.js",
+}
+
+...
+..
+
+```
+
+console.log(stream)울 먼저 작성해보고, 아래와 같이 작성한다.
+
+> navigator.mediaDevices.getUserMedia({}) : 미디어 객체를 생성한다.
+> video.srcObject : video의 객체 소스로 미디어 객체에 연결해준다.
+> video.play() 미디어를 실행한다.
+
+```js
+// recoder.js
+
+const startBtn = document.getElementById("startBtn");
+const video = document.getElementById("preview");
+
+const handleRcordeBtn = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: { width: 500, height: 500 },
+  });
+  video.srcObject = stream;
+  video.play();
+};
+
+startBtn.addEventListener("click", handleRcordeBtn);
+```
+
+
+regenerator-runtime에러가 발생하는데 npm install regenerator-runtime을 설치하고
+
+아래와 같이 작성한다.
+```js
+// main.js
+
+import "regenerator-runtime"
+```
+```pug
+// main.pug
+
+...
+..
+
+script(src="main,js")
+  block scripts
+  
+```
+
+이렇게 적어도 된다.
+
+```js
+// recoder.js
+
+import regeneratorRuntime from "regenerator-runtime"
+
+...
+..
+```
+
+<br>
+<br>
+<br>
+
+# recording button ( media recoder )
+
+recoder.js를 아래와 같이 바꿔서 레코딩 시작, 멈춤 핸들링을 만들고 
+
+innerText도 바꿔준다.
+
+```js
+// recoder.js
+const startBtn = document.getElementById("startBtn");
+const video = document.getElementById("preview");
+
+let stream;
+
+const handleStart = () => {
+  startBtn.innerText = "Stop Recording";
+  startBtn.removeEventListener("click", handleStart);
+  startBtn.addEventListener("click", handleStop);
+  const recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => {
+    console.log("recording done");
+    console.log(e);
+    console.log(e.data);
+  };
+  console.log(recorder);
+  recorder.start();
+  console.log(recorder);
+  setTimeout(() => {
+    recorder.stop();
+  }, 10000);
+};
+
+const handleStop = () => {
+  startBtn.innerText = "Start Recording";
+  startBtn.removeEventListener("click", handleStop);
+  startBtn.addEventListener("click", handleStart);
+};
+const init = async () => {
+  stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: { width: 500, height: 500 },
+  });
+  video.srcObject = stream;
+  video.play();
+};
+
+init();
+
+startBtn.addEventListener("click", handleStart);
+
+
+```
+
+```js
+// recoder.js
+
+
+```
+
+<br>
+<br>
+<br>
 
