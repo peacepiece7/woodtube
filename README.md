@@ -362,9 +362,27 @@ JSON.parse(req.body)를 해서 객체로 변환해 줘도 된다.
 <br>
 
 
-# 왜 fetch().then((response) => console.log(response))는 동작하지 않는가? 
+# 왜 fetch().then((response) => console.log(response))는 동작하지 않는가????
 
 [nodejs는 왜 304코드를 반환하는가 ](https://huns.me/development/2306)
+
+304 stauts는 not Modified
+
+client에게 "이 파일은 너도 가지고 있으니까 니껄 써" 라고 하는 응답 코드라고 한다.
+
+즉, fetch의 결과를 then(response)로 응답하는건데 변경된게 없으니 결과를 보내지 않는다는 거다.
+
+이렇게 작동하는 이유는
+
+1. text 작성 "POST" api router
+2. api router는 text로 schema작성하고 끝!
+3. 서버는 fetch로 보낸 text가 api router에서 무슨 일을 하는지 전혀 모름
+4. http headers Etag 값이 같을 경우 위 블로그에 나온데로 변경없음을 확인 304코드를 보내고 연결을 끝냄
+
+
+```
+```
+``
 
 
 
