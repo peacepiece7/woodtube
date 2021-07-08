@@ -8,7 +8,7 @@
 
 
 <br>
-<br>
+<br
 <br>
 
 
@@ -356,6 +356,11 @@ JSON 객체가 body에서 가져오면 js는 이를 텍스트로 인식한다. �
 보낸 데이터가 json임을 알려준다.
 아니면
 JSON.parse(req.body)를 해서 객체로 변환해 줘도 된다.
+
+<br>
+<br>
+<br>
+
 
 # 왜 fetch().then((response) => console.log(response))는 동작하지 않는가? 
 
